@@ -249,7 +249,8 @@ varys是交换结构，考虑无阻塞的情况。\\
     \caption{整体的工作流图}
 \end{figure}
 \subsection{Mapreduce Fetcher}
-1孟
+1孟\\
+修改 Hadoop，向PyCon控制器POST必要的数据,Reduce进程启动一些数据copy线程(Fetcher)，通过HTTP方式请求map task所在的TaskTracker获取map task的输出文件。
 \subsection{Python controller}
 \subsubsection{HTTPserver}
 2.孟3.孟\\
