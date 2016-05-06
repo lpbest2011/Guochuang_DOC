@@ -176,7 +176,7 @@ Open vSwitch 引入了以下模块，很好地满足以上需求：
 
 当Open vSwitch的一个接口收到数据包后，会按照上述流程图处理：收到数据包后，会交给datapath内核模块处理，当匹配到对应的datapath会直接输出，如果没有匹配到，会交给用户态的ovs-vswitchd查询flow，用户态处理后，会把处理完的数据包输出到正确的端口，并且设置新的datapath规则，后续数据包可以通过新的datapath规则实现快速转发。
 
-\section{coflow}
+\section{基于Coflow的大数据网络优化}
 \subsection{coflow相关知识介绍}
 另外考虑到当前数据中心用并行计算的框架处理大规模的数据，有人提出了coflow的概念。coflow是一组相关的并行数据流的集合，coflow的完成时间由最后一条数据流的完成时间决定。
 
@@ -200,7 +200,9 @@ coflow研究现状中存在的问题：
 负载均衡/ECMP/多路径路由\\
 varys是交换结构，考虑无阻塞的情况。\\
 用matlab仿真，跑一些简单的结果，分析性能
-\section{实验环境}
+
+\section{实验平台搭建}
+\subsection{实验环境}
 \begin{figure}[!htb]
     \centering
     \let\c@\includegraphics[height=2.5in,angle=-90]{experiment_environment1.JPG}\relax
@@ -209,23 +211,30 @@ varys是交换结构，考虑无阻塞的情况。\\
 \end{figure}
 服务器的性能：机器的型号，内存大小，网卡
 
+\begin{table}[ht]
+\caption{系统软硬件及协议配置} \label{table:confg}
+\centering
 \begin{tabular}{|c|c|c|}
   \hline
   % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
-  设备名称 & 设备数量 & 设备配置 \\
+  名称 &  配置 \\
   \hline
-  硬件配置 & 8 &  CPU：16 Intel(R) Xeon(R) CPU\\
-             &    &   E5620 @ 2.40GHz\\
-             &    &  MEM：64G\\
-             &    &   DISK：1000G\\
-             &    &  网卡Speed: 1000 Mbps\\
-             &    &   操作系统：Linux ubuntu \\
+  服务器配置   &  CPU：16 Intel(R) Xeon(R) CPU\\
+             &    E5620 @ 2.40GHz\\
+             &    MEM：64G\\
+             &    DISK：1000G\\
+             &  网卡: 1000 Mbps\\
   \hline
-  控制器软件及版本 & 4 & Floodlight V1.0\\
-                      &     & Thread:8线程 \\
+  软件及协议 & Linux ubuntu 14.04 \\
+             & Floodlight V1.0\\
+             & OVS v2.02 \\
+             & OpenFlow1.3 \\
+             & Hadoop2.7    \\             
+             & Python2.7    \\
   \hline
 \end{tabular}
-\section{实验平台搭建}
+\end{table}
+
 \subsection{Hadoop平台搭建}
 搭建了hadoop平台，完成多节点的配置，进行大数据的处理
 \subsection{SDN开发环境搭建}
@@ -241,13 +250,14 @@ varys是交换结构，考虑无阻塞的情况。\\
     \caption{网络拓扑结构}
 \end{figure}
 
-\section{整个架构的工作流图}
-
+\section{系统设计与开发}
+\subsection{系统整体架构设计}
 \begin{figure}[!htb]
     \centering
     \let\c@\includegraphics[height=3.5in]{work_arch.jpg}\relax
-    \caption{整体的工作流图}
+    \caption{基于SDN+Hadoop的系统架构设计}
 \end{figure}
+
 \subsection{Mapreduce Fetcher}
 1孟\\
 修改 Hadoop，向PyCon控制器POST必要的数据,Reduce进程启动一些数据copy线程(Fetcher)，通过HTTP方式请求map task所在的TaskTracker获取map task的输出文件。
